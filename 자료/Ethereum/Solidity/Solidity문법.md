@@ -266,7 +266,7 @@ contract ex {
 <br>
 
 ## 조건문
-if 안에 있는 조건이 발동되었을때 코드를 실행시켜주는 것
+if 안에 있는 조건이 발동되었을때 코드를 실행시켜주는 구조이다
 <pre>
 if (발동조건) {
 
@@ -282,12 +282,57 @@ else {
 }
 </pre>
 ## 반복문
+반복문은 특정 조건이 참(true)인 동안 코드 블록을 반복 실행하는 구조이다
 ### for
-<pre></pre>
+<pre>
+for(초기값; 값이 얼마나 돌아야하는지; 한번돌때마다 변화) {
+    // 실행될 내용
+}
+
+// 예시
+for(uint i = 0; i < 5; i ++) {
+    emit importantMassage(i);
+}
+</pre>
 ### while
-<pre></pre>
+<pre>
+while(반복할 조건 (조건이 참일때 발동)) {
+    // 실행될 내용
+} 
+
+// 예시
+while(true) {
+    emit importantMassage("메롱");
+}
+</pre>
 ### do-while
-<pre></pre>
+while문과 비슷한 구조를 가졌지만 while과 다르게 먼저 실행한뒤 검사를 하는 구조를 가졌다
+<pre>
+do {
+
+} while ()
+</pre>
+
+## break, continue
+### break
+현재 반복문을 빠져나옴
+<pre>
+while(true) {
+    break;
+}
+</pre>
+### continue
+다음 반복문으로 이동함
+<pre>
+for(uint i = 0; i < 100; i++) {
+    if (i % 2 == 0) {
+        i++;
+    }
+    else {
+        continue;
+    }
+}
+</pre>
 ## 함수
 함수는 다음과 같은 형식으로 선언할 수 있다
 <pre>
@@ -440,7 +485,7 @@ contract Child is Parent {
 <pre>
 event 이벤트명(자료형 변수이름) => 출력하고 싶은 변수를 넣으면 된다
 
-//예시
+// 예시
 event info(string name, uint256 money);
 </pre>
 
@@ -468,6 +513,52 @@ contract ex [
 
 ## 에러핸들러
 솔리디티에서는 올바르지 않은 요청을 걸러내기 위해 에러핸들러를 사용한다
+
+
+## assert, revert, require 0.4.22 ~ 0.7x 버전
+assert, revert, require는 0.4.22
+### require
+다음과 같이 선언하고 괄호안의 값이 false라면 오류를 발생시킨다
+
+assert: 가스를 다 소비한후 ,특정한 조건에 부합하지 않으면 (false) 에러를 발생시킨다
+
+revert: 조건없이 에러를 발생시키고 gas를 환불 시켜준다
+
+require 특정한 조건에 부합하지 얺으면(false) 에러를 발생시키고, gas를 환불해준다
+
+
+### assert
+<pre>
+function assertNow() public pure {
+    assert(false);
+}
+</pre>
+
+### revert
+<pre>
+function revertNow() public pure {
+    revert("~에러~");
+}
+</pre>
+
+### require
+<pre>
+</pre>
+
+<pre>
+// 사용방법
+require(검사할 내용)
+
+
+// 예시
+function wow() {
+    require(prettyNumber == prettyNumber2);
+    //....
+}
+</pre>
+## assert, revert, require 0.8 버전
+## 여러가지 문법의 버전을 알아야하는 이유
+개발을 하다 보면 여러 라이브러리를 사용하게되는데 라이브러리의 내용들이 전부 다르기 때문에 여러버전의 문법을 알아두면 좋다
 
 ## modifier & SPDX
 ## 이더 보내기
