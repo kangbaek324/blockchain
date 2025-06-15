@@ -1,5 +1,5 @@
 # 문서 소개
-최근 수정 시각 : 2025 - 04 - 28
+최근 수정 시각 : 2025 - 05 - 12
 
 이 문서는 현재 작성 중이며, 내용이 변경될 수 있습니다
 
@@ -22,9 +22,11 @@
 ### Gas <br>
 스마트컨트랙트를 배포 / 사용 할때 지불하는 비용 
 
-### Gwei, wei <br>
-가스비를 낼때 사용되는 단위 <br>
-1 ether = 10^9 Gwei = 10^18 wei
+### 이더 단위 <br>
+1 ether = 10^18 wei
+i wei = 10^9 Gwei
+
+Gwei는 보통 가스비를 계산할때 사용된다
 
 가스는 스마트컨트랙트에서 어떤 행위를 하느냐에 따라 부과되는 가스비가 다르다 <br> 자세한 내용은 이더리움 옐로우 페이퍼를 보면 나와있다 <br>
 https://ethereum.github.io/yellowpaper/paper.pdf 
@@ -151,12 +153,16 @@ address addr = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
 // 뒤에 숫자를 생략하게 되면 자동으로 256으로 선언된다
 uint number = 3;
 uint8 number = 3;
+
+### 상수
+
+uint public constant z = 3; // 상수
 </pre>
 ## ReferenceType(참조형 타입)
 ### string
 문자열을 저장할때 사용한다
 <pre>
-string 변수이름 = 값;
+string 변수명 = 값;
 </pre>
 <pre>
 string name = "BaekHo";
@@ -164,27 +170,35 @@ string name = "BaekHo";
 
 ### mapping
 key : value 형식의 데이터를 저장 해야될때 사용한다
+길이 제한이 없다
 
 <pre>
-mapping(key타입 => value타입) 접근제한자 이름;
+mapping(key타입 => value타입) 접근제한자 변수명;
 </pre>
 <pre>
 // 조회하기
-이름[key];
+변수명[key];
 
-// value 값 넣기
-이름[key] = value;
+// 값 넣기
+변수명[key] = value;
 
 mapping (address => bool) voted;
 voted[0x5B38Da6a701c568545dCfcB03FcB875f56beddC4];
 voted[0x5B38Da6a701c568545dCfcB03FcB875f56beddC4] = true;
+
+// 삭제하기
+delete(voted[0x5B38Da6a701c568545dCfcB03FcB875f56beddC4]);
+// voted[0x5B38Da6a701c568545dCfcB03FcB875f56beddC4] = 0;
+// delete도 삭제되면 0으로 치환하기 때문에 0으로 치환해도 됨
 </pre>
 
 ### array
 관련있는 여러 데이터를 하나의 변수로 묶을때 사용한다
+mapping과 다르게 길이가 있다
 <pre>
-배열타입[크기] 접근제한자 배열이름;
+배열타입[크기] 접근제한자 변수명;
 </pre>
+크기를 지정해주지 않으면 동적으로 사용할 수 있다
 <pre>
 uint[] public ageArray;
 uint[50] public ageArray;
@@ -195,17 +209,21 @@ ageArray.push();
 // 배열길이 구하기
 ageArray.length;
 
-// 가장 최근값 삭제
+// 가장 마지막 인덱스 값 삭제
 ageArray.pop();
 
-// 특정 값 삭제
+// 원하는 인덱스 삭제
 delete ageArray[index];
 </pre>
+#### 알아두기
+pop을 사용하게되면 배열의 길이가 줄어들지만 delete 함수를 사용하여 삭제하게되면 길이가 줄어들지 않는다
 ### struct
 구조체란 말 그대로 구조형식의 데이터를 만들때 사용한다 사용자지정 타입을 만든다고 생각하면된다 <br> 솔리디티에서의 구조체 선언 방법은 다음과 같다.
 <pre>
-struct 구조체이름 {
-    자료형 타입 변수명;
+struct 구조체명 {
+    자료형 변수명;
+    자료형 변수명;
+    자료형 변수명;
 }
 </pre>
 <pre>
@@ -220,19 +238,27 @@ function createUser(string memory name, uint256 _age) pure public returns(User m
 
 </pre>
 
-## 사용자 정의타입
 ### enum
 여러 값들 중 하나를 선택할 수 있도록 미리 정해둔 집합형 타입이다
 사용할때는 enumName.hello와 같이 접근할 수 있지만 내부적으로는 uint(0 1 2 3 ...)의 형태로 저장되어 관리된다
 
-uint형식으로 저장되기떄문에 uint256(enumName), enumName(0)와 같이 접근하면 uint256 형태로도 출력할 수 있다 
+원래 타입이 uint8이여서 uint8로 형변환이 가능하다 그리고 uint8의 최대범위가 0-255이기때문에 enum안에서 277개 이상을 선언하게 되면 컴파일 오류가 발생한다 
 
 <pre>
-enum enum이름 { 속성이름 }
+enum 변수명 {  }
 </pre>
 
 <pre>
-enum Status { Pending, Shipped, Delivered, Cancelled }
+enum Light { 
+    TurnOn,
+    TurnOff
+}
+
+Light public lightStatus;
+lightStatus = Light.TurnOn;
+
+event currentStatus(Light _lightStatus, uint _lightStatus);
+ 
 </pre>
 
 ## mapping VS array
@@ -253,16 +279,22 @@ fucntion what(uint256 _age) {
 여기서 접근 제힌자란 말 그대로 접근을 어떻게 제한할 것인지 선택하는 옵션이다 <br>
 함수, 변수등 다양하게 적용할수 있다 생략할경우 public으로 선언된다.
 
-<b>public</b>: <br>
+<b>public</b>
+
 모든곳에서 접근이가능하다
+( 변수 적용시 함수 생성 )
 
-<b>external</b>: <br>
-public 처럼 모든 곳에서 접근가능하나 external이 선언된 컨트랙트에서는 접근이 불가능하다
+<b>external</b> 
 
-<b>private</b>: <br>
+public 처럼 모든 곳에서 접근가능하나 external이 선언된 컨트랙트에서는 접근이 불가능하다<br>
+( 변수 적용 불가, this(현재 컨트랙트를 나타냄) 키워드 사용시 내부 접근 가능 )
+
+<b>private</b>
+
 오직 private이 정의된 컨트랙트에서만 사용가능하다
 
-<b>internal</b>: <br>
+<b>internal</b>
+
 private와 비슷하지만 상속한 컨트랙트에서 접근할수 있다는 차이점이 있다.
 
 <pre>
@@ -271,11 +303,13 @@ uint256 private a2 = 5;
 </pre>
 
 ## 저장방식
-솔리디티에서는 변수가 저장되는 데이터 영역으로 크게 3가지 있다<br>
+솔리디티에서는 변수가 저장되는 데이터 영역으로 크게 4가지 있다<br>
 
 
 ### storage <br>
-블록체인에 영구적인 상태를 저장하는 영역이다 상태변경 함수가 호출될 때마다 해당상태의 변경 사항이 블록체인의 storage에 저장된다 블록체인에 영구저장되는 만큼 접근하는것에 대한 가스비가 비싸다
+영속적인 읽고 / 쓰기가 가능한 저장공간이다 함수의 외부 변수, 함수를 저장한다
+
+영속적이기때문에 가스비용이 비싸다
 <br>
 <pre>
 contract ex {
@@ -283,7 +317,10 @@ contract ex {
 }
 </pre>
 ### memory <br>
-함수가 실행되는 동안에만 사용할 수 있는 가상메모리이다 영역 함수가 실행될동안만 동적으로 할당되며 함수내에서 임시로 사용되는 데이터를 저장하기 위해 사용된다
+함수가 실행되는 동안에만 사용할 수 있는 가상메모리이다 
+
+영역 함수가 실행될동안만 동적으로 할당되며 함수내에서 임시로 사용되는 데이터(함수의 내부에 정의된 변수, 매개변수, 반환값등)를 저장하기 위해 사용된다
+
 임시공간이기 때문에 함수의 실행이 종료되면 이 공간은 삭제된다
 <br>
 <pre>
@@ -305,6 +342,9 @@ contract ex {
 }
 </pre>
 
+### stack
+EVM에서 stack data를 관리할떄 쓰는 영역 1024MB로 제한
+
 storage, memory, calldata 순으로 가스비가 비싸다 
 ## memory VS calldata
 <b>memory</b>
@@ -319,26 +359,27 @@ storage, memory, calldata 순으로 가스비가 비싸다
 <br>
 
 ## 조건문
-if 안에 있는 조건이 발동되었을때 코드를 실행시켜주는 구조이다
+if 안에 있는 조건이 발동되었을때 조건문안에 정의된 코드를 실행시켜주는 구조이다
 <pre>
 if (발동조건) {
-
+    // 특정코드
 }
 else if (앞전 if문이 아니고 이 if문을 만족한다면) {
-
+    // 특정코드
 }
 else if (앞전 if문이 아니고 이 if문을 만족한다면) {
-
+    // 특정코드
 }
 else {
-    // 위 if문들을 모두 만족하지 않는 다면
+    // 위 if문들을 모두 만족하지 않는다면
+    // 특정코드
 }
 </pre>
 ## 반복문
 반복문은 특정 조건이 참(true)인 동안 코드 블록을 반복 실행하는 구조이다
 ### for
 <pre>
-for(초기값; 값이 얼마나 돌아야하는지; 한번돌때마다 변화) {
+for(초기값; 조건식; 증감식) {
     // 실행될 내용
 }
 </pre>
@@ -350,13 +391,12 @@ for(uint i = 0; i < 5; i ++) {
 </pre>
 ### while
 <pre>
-while(반복할 조건 (조건이 참일때 발동)) {
+while(조건문) {
     // 실행될 내용
 } 
 </pre>
 
 <pre>
-// 시
 while(true) {
     emit importantMassage("메롱");
 }
@@ -366,7 +406,7 @@ while문과 비슷한 구조를 가졌지만 while과 다르게 먼저 실행한
 <pre>
 do {
 
-} while ()
+} while (조건문)
 </pre>
 
 ## break, continue
@@ -392,7 +432,7 @@ for(uint i = 0; i < 100; i++) {
 ## 함수
 함수는 다음과 같은 형식으로 선언할 수 있다
 <pre>
-function 함수이름() (view또는pure.. 생략도가능) 접근제한자 returns(반환타입) {
+function 변수명() (view또는pure.. 생략도가능) 접근제한자 returns(반환타입) {
     // 함수 내용
 }
 </pre>
@@ -423,7 +463,7 @@ function read_a() public view returns(uint256) {
 }
 </pre>
 ### pure <br>
-view보다 더 엄격한 조건을 가지며 블록체인에서 상태변화를 일으키지 않고 오로지 계산만 수행한다
+view보다 더 엄격한 조건을 가지며 블록체인에서 상태변화를 이르키지 않고 순수하게 함수안에있는 변수만을 사용할때 사용한다
 <pre>
 uint256 public a = 1;
 
@@ -443,9 +483,17 @@ function read_a3() public returns(uint256) {
 }
 </pre>
 
+## 생성자
+- 스마트 컨트랙트가 배포될때 제일 먼저 작동하는 함수
+- 스마트 컨트랙트를 배포할때 마다 특정한 값을 세팅해줌
+<pre>
+contract lec {
+    constructor() {
+        
+    }
+}
+</pre>
 
-## 인스턴스
-//
 ## 상속
 솔리디티는 is를 사용하여 컨트랙트끼리 상속을 받을 수 있다
 <pre>
@@ -467,6 +515,7 @@ function read_a3() public returns(uint256) {
 </pre>
 
 ## 오버라이딩
+
 먼저 오버라이딩할 함수에 virtual 이라는 키워드를 입력한다
 <pre>
 function getMoney view 여기 또는 public 여기 returns(uint256) {
@@ -525,8 +574,26 @@ contract Child is Parent {
 </pre>
 이렇게 명시적으로 불러올 수 있다
 
+## 인스턴스롸
+인스턴스화란 특정 스마트 컨트랙트를 개별적으로 만드는것이다
+<pre>
+스마트컨트랙트이름 변수명 = new 스마트컨트랙트명();
+
+// 호출하기
+변수명.함수명();
+</pre>
+
+<pre>
+fatherWallet = wallet = new fatherWallet(); 
+
+// 호출하기
+wellet.addMoney();
+</pre>
+
 ## 이벤트
 이벤트란 블록체인에 로그를 생성하는 기능이다 주로 프론트엔드에서 스마트컨트랙트에서 이벤트를 구독하여 컨트랙트의 상태변화를 감지하기 위해 사용된다
+
+블록체인의 특정 블록에 값을 저장하고 함수 내부에서 emit이라는 키워드를 사용해 사용할 수 있다
 <pre>
 event 이벤트명(자료형 변수이름) => 출력하고 싶은 변수를 넣으면 된다
 </pre>
@@ -652,10 +719,25 @@ Panic(uint256)은 0.8.0에 추가된 내장오류 타입이지만 try-catch 문�
 
 ## modifier 
 modifier란 미들웨어 같은 존재이다 여러 함수에 적용해야 될 부분있을때 사용되고 보통 require, assert, revert를 포함한다
+
+<pre>
+// 매개 변수가 있는 모디파이어
+modifier 모디파이어 이름(자료형 매게변수이름) {
+    // 로직
+    _; // 나머지 함수를 마저 실행한다
+}
+
+갳
+// 매게 변수가 없는 모디파이어
+modifier 모디파이어 이름 {
+    // 로직
+    _; // 나머지 함수를 마저 실행한다
+}
+</pre>
 <pre>
 modifier onlyAdults(uint256 _age) {
     require(20 > Age, no kides);
-    _; // 나머지 함수를 마저 실행한다
+    _; 
 }
 
 function functionName(_age) public onlyAdults(uint256 _age) returns(uint256) {
@@ -703,6 +785,7 @@ function sendNow(address payble _to) public payble {
 </pre>
 
 이러한 키워드를 붙이는 이유는 이더라는 자산을 다른 지갑으로 옮기는 행위이기때문에 보안을 위해서 Solidity에게 옮기는것을 승인받아야하기 때문에 사용한다
+
 ### send
 2300가스를 소비하고 성공여부를 true, false로 반환한다 <br> 단점으로는 에러를 보내지 못한다
 
@@ -725,22 +808,30 @@ send와 동일하게 성공여부를 true, false로 반환한다 가스를 가�
 call은 송금하는것뿐만 아니라 외부 스마트컨트랙트 함수를 부를 수 도있다
 <pre>
 // 송금하기
+
 function transferEther(address payable _to) public payable {
+    // ~ 0.7
+    // (bool sucess) = _to.call.gas(1000).value(msg.value)("");
+    // require(sucess, "fail"); 
+
+    // 0.7 ~
     (bool success,) = _to.call{value: msg.value}("");
+    require(success, "fail");
 }
 
-require(sucess, "fail");
 </pre>
 
 <pre>
-// 다른 컨트랙트 호출하기
+// 외부 컨트랙트 호출하기
 function callMethod(address _ccontratAddr, uint256 _num1, uint256 _nume2) public {
+    // _contractAddr는 외부 스마트컨트랙트 주소임
     (bool success, bytes memory outputFromCalledFunction) = _contractAddr.call(
         abi.encodeWithSignature("addNumber(uint256, uint256)", _num1, _num2);
     )
+
+    require(success, "fail");
 }
 
-require(sucess, "fail");
 
 /*
 
@@ -749,6 +840,9 @@ _contractAddr.call이 부분을 _contractAddr.call{value: ...} 으로 변경하�
 */
 
 </pre>
+
+#### 알아두기
+send, transfer, call은 주소 타입의 내장 함수이다
 ### delegate call
 delegate call은 기존의 call과 비슷하지만 다른 특징을 가지고 있다
 
@@ -790,7 +884,10 @@ function sendEther(address payable recipient) public payable {
 </pre>
 
 ### 알아두기
-ABI는 이더리움환경안에서 스마트컨트랙트를 상호작용하는 표준방법이다
+#### ABI란
+- ABI는 이더리움환경안에서 스마트컨트랙트를 상호작용하는 표준방법이다
+- ABI는 컨트랙트 함수를 JSON 형태로 표현한 정보로 EVM이 컨트랙트 함수를 실행할 때 필요
+- 컨트랙트 함수를 실행하려는 사람은 ABI 정보를 노드에 제공
 
 이스탄불 하드포크이후 가스 가격이 올라 2019년 12월 이후부터는 call사용을 권장하고 있다 (이후에 가스가격이 오르게 되면 요청에 실패 할 수 도 있기때문)
 
@@ -837,6 +934,7 @@ receive() external payable {
 
 ## interface
 인터페이스란 스마트컨트랙트내에서 정의되여야 할 것을 나타낸다
+쉽게 말해서 설명서 같은거라고 생격하면 편하다
 
 interface 정의 규칙은 다음과 같다
 1. 함수를 사용할경우는에는 external로 표기한다
@@ -896,13 +994,23 @@ libary SafeMath {
 }
 
 contract lec {
-    using SafeMath for uint8;
+    // using SafeMath; // 이 라이브러리를 사용한다
+    using SafeMath for uint8; // uint8 변수타입에 적용한다
     uint public a;
 
     function libaryTest(uint8 _num1, uint8 _num2) public pure {
         a = SafeMath.add(_num1, _num2);
     }
 }
+</pre>
+### 서로 다른 라이브러리안에 같은 이름의 함수가 있을경우
+서로 다른 라이브러리안에 같은 이릉믱 함수가 있을경우 호출 할떄 명시적으로 호출 해줘야한다
+<pre>
+using LibA;
+using LibB;
+
+uint resultA = LibA.doSomething(5);
+uint resultB = LibB.doSomething(5);
 </pre>
 ## import
 파일을 분리해서 컨트랙트를 작성했을때 다른 파일에 있는 컨트랙트를 그냥 가져오면 Solidity는 어디에 있는 컨트랙트를 말하는지 모른다
@@ -933,4 +1041,4 @@ view, pure <br>
 https://jerryjerryjerry.tistory.com/147 <br>
 
 저장방식 <br>
-https://jerryjerryjerry.tistory.com/148
+https://jerryjerryjerry.tistory.com/148 
