@@ -21,4 +21,4 @@ https://remix-project.org/?lang=ko
 
 Remix 다운로드링크
 
- https://github.com/remix-project-org/remix-desktop-insiders/releases/tag/v1.0.8-insiders
+https://github.com/remix-project-org/remix-desktop-insiders/releases/tag/v1.0.8-insiders
