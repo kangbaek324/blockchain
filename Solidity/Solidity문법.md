@@ -163,10 +163,6 @@ address addr = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
 // 뒤에 숫자를 생략하게 되면 자동으로 256으로 선언된다
 uint number = 3;
 uint8 number = 3;
-
-### 상수
-
-uint public constant z = 3; // 상수
 </pre>
 ## ReferenceType(참조형 타입)
 ### string
@@ -176,6 +172,26 @@ string 변수명 = 값;
 </pre>
 <pre>
 string name = "BaekHo";
+</pre>
+
+## constant, immutable
+### conbstant
+상수를 선언할때 사용된다 <br>
+컴파일 시점에 EVM에 하드코딩된다 이로인해 가스비가 굉장히 저렴하다.
+
+<pre>
+uint public constant z = 3;
+</pre>
+
+### immutable
+불변성은 상수와 유사하지만 생성자를 통해 초기 값을 입력할 수 있다 (이후에는 수정 불가능)
+
+배포할때 코드 세그먼트에 저장된다 constant만큼 가스비가 저렴한건 아니지만 storage에 접근하는거 보다는 저렴하다
+
+
+
+<pre>
+uint public immutable z = 3;
 </pre>
 
 ### mapping
@@ -249,10 +265,11 @@ function createUser(string memory name, uint256 _age) pure public returns(User m
 </pre>
 
 ### enum
-여러 값들 중 하나를 선택할 수 있도록 미리 정해둔 집합형 타입이다
+여러 값들 중 하나를 선택할 수 있도록 미리 정해둔 집합형 타입이다 
+<br>같은 이름을 가지게 되는 상수끼리 충돌 방지와 가독성을 좋게 하기 위해 사용된다.<br>
 사용할때는 enumName.hello와 같이 접근할 수 있지만 내부적으로는 uint(0 1 2 3 ...)의 형태로 저장되어 관리된다
 
-원래 타입이 uint8이여서 uint8로 형변환이 가능하다 그리고 uint8의 최대범위가 0-255이기때문에 enum안에서 277개 이상을 선언하게 되면 컴파일 오류가 발생한다 
+원래 타입이 uint8이여서 uint8로 형변환이 가능하다 그리고 uint8의 최대범위가 0-255이기때문에 enum안에서 257개 이상을 선언하게 되면 컴파일 오류가 발생한다 
 
 <pre>
 enum 변수명 {  }
@@ -285,7 +302,7 @@ fucntion what(uint256 _age) {
 }
 </pre>
 
-## 접근 제한자
+## 접근 제한자 (가시성 지정자)
 여기서 접근 제힌자란 말 그대로 접근을 어떻게 제한할 것인지 선택하는 옵션이다 <br>
 함수, 변수등 다양하게 적용할수 있다 생략할경우 public으로 선언된다.
 
@@ -306,6 +323,8 @@ public 처럼 모든 곳에서 접근가능하나 external이 선언된 컨트�
 <b>internal</b>
 
 private와 비슷하지만 상속한 컨트랙트에서 접근할수 있다는 차이점이 있다.
+
+상태변수에 아무런 가시지정자를 지정해주지 않으면 기본으로 internal이 선언된다
 
 <pre>
 uint256 public a1 = 2;
@@ -438,7 +457,7 @@ for(uint i = 0; i < 100; i++) {
     }
 }
 </pre>
-## 함수
+## 함수 (Function)
 함수는 다음과 같은 형식으로 선언할 수 있다
 <pre>
 function 변수명() (view또는pure.. 생략도가능) 접근제한자 returns(반환타입) {
@@ -463,7 +482,7 @@ function test(string memory name) {
 ## view, pure
 솔리디티는 함수를 정의할때 함수 옆애 붙어서 제약을 걸어주는 키워드들이 존재한다 이 키워드를 잘 사용하면 컨트랙트의 가스비를 줄이거나 간편히 제약을 걸 수 있다.
 ### view <br>
-단순히 값을 읽을때 사용된다 <br>
+상태변수를 읽고 상태변수를 수정하지 않을때 붙는다. <br>
 <pre>
 uint256 public a = 1;
 
@@ -472,7 +491,7 @@ function read_a() public view returns(uint256) {
 }
 </pre>
 ### pure <br>
-view보다 더 엄격한 조건을 가지며 블록체인에서 상태변화를 이르키지 않고 순수하게 함수안에있는 변수만을 사용할때 사용한다
+상태변수를 읽지도 않고 수정도 하지않을때 사용한다.
 <pre>
 uint256 public a = 1;
 
@@ -1041,13 +1060,9 @@ import "github .sol file link"
 ### Solidity Overflow
 0.8.0이상 버전 부터는 Overflow시 자동으로 revert된다
 ## 참고한 자료
-전체 <br>
 https://www.inflearn.com/course/%EC%86%94%EB%A6%AC%EB%94%94%ED%8B%B0-%EC%8A%A4%EB%A7%88%ED%8A%B8-%EC%BB%A8%ED%8A%B8%EB%9E%99/dashboard
-https://solidity-kr.readthedocs.io/ko/latest/ <br>
-https://soliditylang.org/ <br>
-
-view, pure <br>
-https://jerryjerryjerry.tistory.com/147 <br>
-
-저장방식 <br>
+https://solidity-kr.readthedocs.io/ko/latest/ 
+https://soliditylang.org/
+https://jerryjerryjerry.tistory.com/147
 https://jerryjerryjerry.tistory.com/148 
+https://velog.io/@jhcha/Solidity-%EC%8A%A4%EB%A7%88%ED%8A%B8-%EC%BB%A8%ED%8A%B8%EB%9E%99%ED%8A%B8-%EC%BD%94%EB%93%9C-%EB%A6%AC%EB%B7%B0-3
