@@ -188,6 +188,8 @@ uint public constant z = 3;
 
 배포할때 코드 세그먼트에 저장된다 constant만큼 가스비가 저렴한건 아니지만 storage에 접근하는거 보다는 저렴하다
 
+참조타입에서는 사용이 불가 하고 값 타입에서만 사용할 수 있다.
+
 
 
 <pre>
@@ -542,7 +544,11 @@ contract lec {
  }
 </pre>
 
+## 오버로딩 
+오버로딩이랑 같은 
+
 ## 오버라이딩
+오버라이딩이란 상속한 컨트랙트의 함수를 내 입맛대로 바꾸는것을 의미한다. 한번 사용해보자
 
 먼저 오버라이딩할 함수에 virtual 이라는 키워드를 입력한다
 <pre>
@@ -555,7 +561,9 @@ function getMoney view 여기 또는 public 여기 returns(uint256) {
 
 그다음 함수안의 내용을 원하는 내용으로 변경해주면 된다.
 
-## 두개 이상 상속하기
+0.6 이하 버전에서는 virtual과 override를 명시하지 않는다.
+
+## 두개 이상 상속하기 (다중 상속)
 컨트랙트를 두개 이상 상속할경우에는 , 로 구분한다
 
 <pre>
@@ -600,9 +608,9 @@ contract Child is Parent {
 <pre>
 상속받은컨트랙트이름.함수명()
 </pre>
-이렇게 명시적으로 불러올 수 있다
+이렇게 명시적으로 불러와야한다.
 
-## 인스턴스롸
+## 인스턴스화
 인스턴스화란 특정 스마트 컨트랙트를 개별적으로 만드는것이다
 <pre>
 스마트컨트랙트이름 변수명 = new 스마트컨트랙트명();
@@ -683,6 +691,8 @@ function requireNow() {
 </pre>
 
 보통 개발환경에서는 assert를 사용하고 실제 컨트랙트를 작성할때는 revert + if 또는 require을 사용한다
+
+3가지의 공톰점으로는 모두 트랜잭션을 실패시킨다
 ## assert, revert, require 0.8 ~ 버전
 assert: 오직 내부 테스트와 불변성 체크 용도로 사용된다 그리고 assert 에러를 발생시키면 Panic(uint256) 이라는 에러타입을 발생시킨다
 
@@ -692,12 +702,16 @@ assert: 오직 내부 테스트와 불변성 체크 용도로 사용된다 그�
 함수자체를 실행하는 가스비는 환불해주지 않는다
 
 ## try / catch
-try-catch 문은 코드 실행 중 발생할 수 있는 예외를 처리하기 위해 사용하는 구조이다
+try-catch 문은 코드 실행 중 발생할 수 있는 예외를 처리하기 위해 사용하는 구조이다 앞선 assert, revert, require과 다른 점은 트랜잭션을 실패시키지 않는다 이다.
+
+### 알아두기
+catch안에서 오류가 나면 트랜잭션이 실패하게된다.
 
 ## catch의 종류
 ### catch Error(string memory reason) { ... }
 revert 나 require을 통해 생성된 에러용도
 ### catch Panic(uint errorCode) { ... }
+assert에서 발생한 오류를 잡기위해 사용된다 (Panic)
 catch Panic은 0.8.1 버전 부터 사용가능하다
 
 assert를 통해 생성된 에러가 날때
@@ -755,7 +769,6 @@ modifier 모디파이어 이름(자료형 매게변수이름) {
     _; // 나머지 함수를 마저 실행한다
 }
 
-갳
 // 매게 변수가 없는 모디파이어
 modifier 모디파이어 이름 {
     // 로직
@@ -959,6 +972,34 @@ receive() external payable {
 </pre>
 
 두개의 함수로 나뉘었다고 기존의 fallback기능이 사라진것은 아니다
+<pre>
+Which function is called, fallback() or receive()?
+
+           send Ether
+               |
+         msg.data is empty?
+              / \
+            yes  no
+            /     \
+receive() exists?  fallback()
+         /   \
+        yes   no
+        /      \
+    receive()   fallback()
+</pre>
+## abstract (추상 컨트랙트)
+<pre>
+abstract contract Animal {
+    function sound() public view virtual returns (string memory);
+}
+
+contract Dog is Animal {
+    function sound() public view override returns (string memory) {
+        return "멍멍";
+    }
+}
+
+</pre>
 
 ## interface
 인터페이스란 스마트컨트랙트내에서 정의되여야 할 것을 나타낸다
@@ -967,7 +1008,7 @@ receive() external payable {
 interface 정의 규칙은 다음과 같다
 1. 함수를 사용할경우는에는 external로 표기한다
 
-2. enum, structs는 사용가능하지만 변수
+2. enum, structs는 사용가능하지만 변수는 선언이 불가능하다
 
 3. 생성자는 사용할 수 없다
 
