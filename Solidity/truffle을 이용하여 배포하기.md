@@ -87,7 +87,7 @@ truffle init
 
 위 명령어를 실행하게되면 다음과 같은 구조로 프로젝트가 구성된다
 
-![alt text](image.png)
+![alt text](../Images/truffle_1.png)
 
 
 contracts 폴더에는 .sol 확장자의 스마트컨트랙트 코드가 담긴 파일을 저장한다
